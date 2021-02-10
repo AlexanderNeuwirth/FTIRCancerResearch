@@ -1,0 +1,11 @@
+**/.idea
+**/__pycache__
+**/venv
+**/checkpoint
+stimlib
+spectral
+logs
+**/*.hdr
+**/*.img
+**/*.h5
+**/*.png
