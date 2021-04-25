@@ -11,6 +11,9 @@ SET TARGET=%1
 FOR /F "tokens=*" %%g IN ('git rev-parse --abbrev-ref HEAD') do (SET BRANCH=%%g)
 FOR /F "tokens=*" %%g IN ('git config --get remote.origin.url') do (SET REMOTE=%%g)
 
+:: Enter working directory
+cd cnn
+
 :: Fill in run.sh template fields
 powershell -Command "(gc scripts\run_template.sh) -replace '{{BRANCH}}', '%TARGET%' | Out-File -encoding ASCII run.sh"
 
