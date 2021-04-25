@@ -26,13 +26,13 @@ SET DATETIME=%date:~10,4%%date:~4,2%%date:~7,2%_%time:~1,2%%time:~3,2%%time:~6,2
 SET ID=%TARGET%_%DATETIME%
 
 :: Copy and fill in template script
-copy .\cnn-keras\scripts\setup_template.sh scripts\temp.sh
+copy scripts\setup_template.sh scripts\temp.sh
 powershell -Command "(gc scripts\temp.sh) -replace '{{BRANCH}}', '%TARGET%' | Out-File -encoding ASCII scripts\temp.sh"
 powershell -Command "(gc scripts\temp.sh) -replace '{{REMOTE}}', '%REMOTE%' | Out-File -encoding ASCII scripts\temp.sh"
 powershell -Command "(gc scripts\temp.sh) -replace '{{ID}}', '%ID%' | Out-File -encoding ASCII scripts\temp.sh"
 
 :: Execute remote component
-putty.exe -ssh neuwirtha@dh-ood.hpc.msoe.edu -pw %ROSIE_ACCESS% -m scripts\temp.sh
+putty.exe -ssh neuwirtha@dh-ood.hpc.msoe.edu -pw %ROSIE_ACCESS% -m .\cnn-keras\scripts\temp.sh
 
 :: Return to original branch
 git checkout %BRANCH%
