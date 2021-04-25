@@ -14,6 +14,9 @@ git clone {{REMOTE}} {{ID}}
 cd {{ID}} || exit
 git checkout {{BRANCH}}
 
+# Enter subproject
+cd cnn-keras
+
 # Schedule with SLURM
 sbatch run.sh
 
