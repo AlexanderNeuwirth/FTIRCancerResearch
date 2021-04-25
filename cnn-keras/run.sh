@@ -43,4 +43,15 @@ python3 -m virtualenv venv
 # Override PIL's maximum image size (must be done by modifying the library source)
 /bin/sed -i -e 's/MAX_IMAGE_PIXELS =/MAX_IMAGE_PIXELS = 12 */' ./venv/lib/python3.6/site-packages/PIL/Image.py
 
-./venv/bin/python3 -u main.py
+data="/data/berisha_lab/neuwirth/data/mnf16"
+masks="/data/berisha_lab/neuwirth/annotations_4"
+checkpoint="adam0p01"
+crop=33
+classes=5
+samples=100000
+epochs=1
+batch=128
+
+./venv/bin/python3 -u hsi_cnn/hsi_cnn_train_keras.py --data $data --masks $masks/train --crop $crop --checkpoint $checkpoint --classes $classes --epochs $epochs --batch $batch --balance --samples $samples --validate --valdata $data --valmasks $masks/val --valsamples $samples
+
+./venv/bin/python3 -u hsi_cnn/hsi_cnn_classify_keras.py --data $data --masks $masks/test --checkpoint $checkpoint --crop $crop --classes $classes
