@@ -7,11 +7,11 @@ mkdir -p autojobs
 cd autojobs || exit
 
 # Clear out previous duplicate jobs
-rm -rf test_20210425_7:0847
+rm -rf test_20210425_7:1054
 
 # Pull down code
-git clone git@github.com:AlexanderNeuwirth/FTIRCancerResearch.git test_20210425_7:0847
-cd test_20210425_7:0847 || exit
+git clone git@github.com:AlexanderNeuwirth/FTIRCancerResearch.git test_20210425_7:1054
+cd test_20210425_7:1054 || exit
 git checkout test
 
 # Schedule with SLURM
