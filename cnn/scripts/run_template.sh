@@ -31,17 +31,10 @@
 #SBATCH --output=log.out
 #SBATCH --job-name={{BRANCH}}
 
-# Your job
 python3 -m pip install --user virtualenv
 python3 -m virtualenv venv
 
-# Sourcing isn't working on the cluster with my configuration for some reason...
-# source ./venv/bin/activate
-
 ./venv/bin/pip3 install -r requirements.txt
-
-# Override PIL's maximum image size (must be done by modifying the library source)
-/bin/sed -i -e 's/MAX_IMAGE_PIXELS =/MAX_IMAGE_PIXELS = 12 */' ./venv/lib/python3.6/site-packages/PIL/Image.py
 
 data="/data/berisha_lab/neuwirth/data/mnf16"
 masks="/data/berisha_lab/neuwirth/annotations_4"

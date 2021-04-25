@@ -1,11 +1,7 @@
+from cnn.models import hsi_cnn_model_keras_012921
 import warnings
 warnings.filterwarnings("ignore", message=r"Passing", category=FutureWarning)
 import argparse
-import cnn3d_model
-import optir_model
-import utils_keras
-import hsi_cnn_model_keras_012921
-import hsi_cnn_model_keras_relu
 import os
 
 ################ read command line arguments####################################################
