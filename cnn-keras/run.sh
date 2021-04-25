@@ -31,8 +31,6 @@
 #SBATCH --output=log.out
 #SBATCH --job-name=test
 
-# Activate the anaconda environment. Must use this form in scripts.
-#. /usr/local/anaconda3/bin/activate
 # Your job
 python3 -m pip install --user virtualenv
 python3 -m virtualenv venv
@@ -46,6 +44,3 @@ python3 -m virtualenv venv
 /bin/sed -i -e 's/MAX_IMAGE_PIXELS =/MAX_IMAGE_PIXELS = 12 */' ./venv/lib/python3.6/site-packages/PIL/Image.py
 
 ./venv/bin/python3 -u main.py
-
-# Deactivate the anaconda environment
-# conda deactivate
