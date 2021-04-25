@@ -22,19 +22,30 @@
 # You _must_ specify the partition. Rosie's default is the 'teaching'
 # partition for interactive nodes. You must use the 'batch' partition
 # to submit jobs.
-#SBATCH --partition=teaching
+#SBATCH --partition=dgx
 # The number of GPUs to request
-#SBATCH --gpus=1
+#SBATCH --gpus=2
 # The number of CPUs to request per GPU
-#SBATCH --cpus-per-gpu=8
+#SBATCH --cpus-per-gpu=16
 # Naming
-#SBATCH --output=pong_job.out
+#SBATCH --output=log.out
 #SBATCH --job-name={{BRANCH}}
 
 # Activate the anaconda environment. Must use this form in scripts.
 #. /usr/local/anaconda3/bin/activate
 # Your job
-pip3 install --user -r requirements.txt
-python3 main.py
+python3 -m pip install --user virtualenv
+python3 -m virtualenv venv
+
+# Sourcing isn't working on the cluster with my configuration for some reason...
+# source ./venv/bin/activate
+
+./venv/bin/pip3 install -r requirements.txt
+
+# Override PIL's maximum image size (must be done by modifying the library source)
+/bin/sed -i -e 's/MAX_IMAGE_PIXELS =/MAX_IMAGE_PIXELS = 12 */' ./venv/lib/python3.6/site-packages/PIL/Image.py
+
+./venv/bin/python3 -u main.py
+
 # Deactivate the anaconda environment
 # conda deactivate

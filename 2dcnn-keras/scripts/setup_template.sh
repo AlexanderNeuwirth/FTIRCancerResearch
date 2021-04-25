@@ -3,7 +3,7 @@
 # Written by Xander Neuwirth, January 2020
 
 # Create and descend hierarchy
-mkdir autojobs
+mkdir -p autojobs
 cd autojobs || exit
 
 # Clear out previous duplicate jobs
@@ -21,4 +21,4 @@ sbatch run.sh
 sleep 15
 
 # Hook into updates
-tail -f pong_job.out
+tail -f log.out

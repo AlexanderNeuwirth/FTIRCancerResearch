@@ -11,9 +11,6 @@ SET TARGET=%1
 FOR /F "tokens=*" %%g IN ('git rev-parse --abbrev-ref HEAD') do (SET BRANCH=%%g)
 FOR /F "tokens=*" %%g IN ('git config --get remote.origin.url') do (SET REMOTE=%%g)
 
-:: Temporarily hardcode github IP to work around DNS issues on cluster
-SET GITHUB_IP=140.82.113.3
-
 :: Fill in run.sh template fields
 powershell -Command "(gc scripts\run_template.sh) -replace '{{BRANCH}}', '%TARGET%' | Out-File -encoding ASCII run.sh"
 
@@ -28,14 +25,11 @@ git push --set-upstream --force origin %TARGET%
 SET DATETIME=%date:~10,4%%date:~4,2%%date:~7,2%_%time:~1,2%%time:~3,2%%time:~6,2%
 SET ID=%TARGET%_%DATETIME%
 
-echo %GITHUB_IP%
 :: Copy and fill in template script
 copy scripts\setup_template.sh scripts\temp.sh
 powershell -Command "(gc scripts\temp.sh) -replace '{{BRANCH}}', '%TARGET%' | Out-File -encoding ASCII scripts\temp.sh"
 powershell -Command "(gc scripts\temp.sh) -replace '{{REMOTE}}', '%REMOTE%' | Out-File -encoding ASCII scripts\temp.sh"
 powershell -Command "(gc scripts\temp.sh) -replace '{{ID}}', '%ID%' | Out-File -encoding ASCII scripts\temp.sh"
-:: DNS issue workaround
-powershell -Command "(gc scripts\temp.sh) -replace 'github.com', '%GITHUB_IP%' | Out-File -encoding ASCII scripts\temp.sh"
 
 :: Execute remote component
 putty.exe -ssh neuwirtha@dh-ood.hpc.msoe.edu -pw %ROSIE_ACCESS% -m scripts\temp.sh
