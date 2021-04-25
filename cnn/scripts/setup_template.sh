@@ -15,7 +15,7 @@ cd {{ID}} || exit
 git checkout {{BRANCH}}
 
 # Schedule with SLURM
-sbatch singularity shell --nv -B /data/:/data/ /data/containers/msoe-tensorflow.sif ./cnn/run.sh
+srun singularity shell --nv -B /data/:/data/ /data/containers/msoe-tensorflow.sif ./cnn/run.sh
 
 # Give slurm time to create outfile
 sleep 15
