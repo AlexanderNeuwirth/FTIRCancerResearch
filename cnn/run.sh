@@ -49,6 +49,8 @@ samples=100000
 epochs=1
 batch=128
 
+./cnn/venv/bin/python3 -c "import sys; print(sys.path)"
+
 ./cnn/venv/bin/python3 -u cnn/hsi_cnn/hsi_cnn_train_keras.py --data $data --masks $masks/train --crop $crop --checkpoint $checkpoint --classes $classes --epochs $epochs --batch $batch --balance --samples $samples --validate --valdata $data --valmasks $masks/val --valsamples $samples
 
 ./cnn/venv/bin/python3 -u cnn/hsi_cnn/hsi_cnn_classify_keras.py --data $data --masks $masks/test --checkpoint $checkpoint --crop $crop --classes $classes

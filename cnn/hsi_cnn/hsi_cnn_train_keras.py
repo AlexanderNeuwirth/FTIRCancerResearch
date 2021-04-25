@@ -1,4 +1,5 @@
 from cnn.models import hsi_cnn_model_keras_012921
+from cnn.hsi_cnn import utils_keras
 import warnings
 warnings.filterwarnings("ignore", message=r"Passing", category=FutureWarning)
 import argparse
