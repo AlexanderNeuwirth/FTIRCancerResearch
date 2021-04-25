@@ -14,9 +14,6 @@ git clone {{REMOTE}} {{ID}}
 cd {{ID}} || exit
 git checkout {{BRANCH}}
 
-# Enter subproject
-cd cnn
-
 # Schedule with SLURM
 sbatch run.sh
 

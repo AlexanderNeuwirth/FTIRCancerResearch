@@ -34,7 +34,7 @@
 python3 -m pip install --user virtualenv
 python3 -m virtualenv venv
 
-./venv/bin/pip3 install -r requirements.txt
+./cnn/venv/bin/pip3 install -r requirements.txt
 
 data="/data/berisha_lab/neuwirth/data/mnf16"
 masks="/data/berisha_lab/neuwirth/annotations_4"
@@ -45,6 +45,6 @@ samples=100000
 epochs=1
 batch=128
 
-./venv/bin/python3 -u hsi_cnn/hsi_cnn_train_keras.py --data $data --masks $masks/train --crop $crop --checkpoint $checkpoint --classes $classes --epochs $epochs --batch $batch --balance --samples $samples --validate --valdata $data --valmasks $masks/val --valsamples $samples
+./cnn/venv/bin/python3 -u hsi_cnn/hsi_cnn_train_keras.py --data $data --masks $masks/train --crop $crop --checkpoint $checkpoint --classes $classes --epochs $epochs --batch $batch --balance --samples $samples --validate --valdata $data --valmasks $masks/val --valsamples $samples
 
-./venv/bin/python3 -u hsi_cnn/hsi_cnn_classify_keras.py --data $data --masks $masks/test --checkpoint $checkpoint --crop $crop --classes $classes
+./cnn/venv/bin/python3 -u hsi_cnn/hsi_cnn_classify_keras.py --data $data --masks $masks/test --checkpoint $checkpoint --crop $crop --classes $classes
