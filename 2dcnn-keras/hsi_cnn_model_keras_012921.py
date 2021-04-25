@@ -51,7 +51,7 @@ def build_net(X, Y, num_classes, num_epochs, checkpoint_path, size_batch, Xval=N
 
     ##########################################################################
     # initiate AdaDelta optimizer
-    opt = keras.optimizers.Adadelta(lr=0.1, epsilon=1e-07)
+    opt = keras.optimizers.Adam(lr=0.01)
 
     ##########################################################################
     # Let's train the model using Adadelta
@@ -63,13 +63,13 @@ def build_net(X, Y, num_classes, num_epochs, checkpoint_path, size_batch, Xval=N
 
     logdir = "logs/scalars/" + datetime.now().strftime("%Y%m%d-%H%M%S")
     tensorboard_callback = keras.callbacks.TensorBoard(log_dir=logdir)
+    if not os.path.exists(checkpoint_path):
+        os.makedirs(checkpoint_path)
 
-    filepath = "./checkpoint/model.h5"#"model-e{epoch:02d}-{val_accuracy:.2f}.h5"
-    checkpoint = ModelCheckpoint(filepath, monitor='val_accuracy', verbose=1, save_best_only=True, mode='max')
+    filepath = f"{checkpoint_path}/model.h5"
+    checkpoint = ModelCheckpoint(filepath, monitor='val_loss', verbose=1, save_best_only=True, mode='min')
 
     # Train
-
-
     if train:
         start_time = time.time()
         history_callback = None

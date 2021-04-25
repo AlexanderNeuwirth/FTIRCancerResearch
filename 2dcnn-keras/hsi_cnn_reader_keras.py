@@ -143,7 +143,6 @@ class hsi_cnn_reader_keras(object):
         self.__samples_per_class = np.zeros(self.__num_masks, dtype=np.int32)
         for i in range(self.__num_masks):
             file_name = self.__masks_file_names[i]
-            print(file_name)
             temp = imageio.imread(file_name, as_gray=True)
             temp[temp > 0] = 1 #np.divide(temp, np.amax(temp))
             # temp = np.multiply(temp, i+1)
@@ -155,8 +154,6 @@ class hsi_cnn_reader_keras(object):
 
             if self.__num_samples is None:
                 self.__samples_per_class[i] = np.count_nonzero(temp)
-                print(f"Class samples: {self.__samples_per_class[i]}")
-                print(np.unique(temp, return_counts=True))
             else:
                 # if user has specified a max number of samples per class
                 if self.__num_samples > np.count_nonzero(temp):

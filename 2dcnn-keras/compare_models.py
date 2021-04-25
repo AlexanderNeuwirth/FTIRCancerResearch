@@ -1,12 +1,19 @@
-import warnings
-warnings.filterwarnings("ignore", message=r"Passing", category=FutureWarning)
 import argparse
-import cnn3d_model
+import alexnet_model
+import vgg16_model
+import inception_model
 import optir_model
 import utils_keras
-import hsi_cnn_model_keras_012921
-import hsi_cnn_model_keras_relu
 import os
+import numpy as np
+import spectral.io.envi as envi
+import time
+import scipy.misc
+import sys
+sys.path.insert(1, './stimlib/python')
+import classify
+from tensorflow.keras.models import load_model
+
 
 ################ read command line arguments####################################################
 parser = argparse.ArgumentParser(description="Train a CNN model on FTIR HSI data -- \
@@ -16,6 +23,8 @@ parser = argparse.ArgumentParser(description="Train a CNN model on FTIR HSI data
 required = parser.add_argument_group('required named arguments')
 required.add_argument("--data", help="Path to train data folder.", type=str)
 required.add_argument("--masks", help="Path to train masks folder.", type=str)
+required.add_argument("--test_data", help="Path to train data folder.", type=str)
+required.add_argument("--test_masks", help="Path to train masks folder.", type=str)
 required.add_argument("--checkpoint", help="Path to checkpoint directory.", type=str)
 required.add_argument("--crop", help="Crop size", type=int)
 required.add_argument("--classes", help="Num of classes.", type=int)
@@ -33,17 +42,13 @@ parser.add_argument("--valsamples", help="Num of validation samples per class.",
 
 args = parser.parse_args()
 
-checkpoint_path = f"/data/berisha_lab/neuwirth/code/2dcnn-keras/checkpoint/{args.checkpoint}"
-
-utils_keras.chp_folder(checkpoint_path)   # delete contents of checkpoint folder if it exists
-
 print('\n.............loading training data...........\n')
 X,Y, num_bands = utils_keras.load_data(args.data, args.masks, args.crop, args.classes, samples=args.samples, balance=args.balance)
 print('\n..............done loading training data.........\n')
+
 ###############################################################################
 # load new validation set
 ###############################################################################
-
 if args.validate:
     # load validation data from different envi file
     print('\n...........loading validation data............\n')
@@ -54,32 +59,25 @@ else:
     X_val = None
     Y_val = None
 
+models = [inception_model, vgg16_model]
 
-# Real-time data preprocessing
-#img_prep = ImagePreprocessing()
-#img_prep.add_featurewise_zero_center()
-#img_prep.add_featurewise_stdnorm()
+for model in models:
+    #utils_keras.chp_folder(args.checkpoint) # delete contents of checkpoint folder if it exists
+    print(f'============ training with {model.__name__}==========\n')
+    model = model.build_net(X,
+        Y,
+        args.classes,
+        args.epochs,
+        args.checkpoint,
+        args.batch,
+        Xval=X_val,
+        Yval=Y_val)
+    print('\n ======= classifying =========\n')
 
-# Real-time data augmentation
-#img_aug = ImageAugmentation()
+                                    
+    model = load_model(os.path.join(args.checkpoint, 'model.h5'))
 
-# set up network
-
-
-print(f'============ training {args.checkpoint}==========\n')
-print('X shape: ', X.shape)
-print('Y shape: ', Y.shape)
-if X_val is not None and Y_val is not None:
-    print('Xval shape: ', X_val.shape)
-    print('Yval shape: ', Y_val.shape)
-
-model = hsi_cnn_model_keras_012921.build_net(X,
-    Y,
-    args.classes,
-    args.epochs,
-    checkpoint_path,
-    args.batch,
-    Xval=X_val,
-    Yval=Y_val)
-
-print('\n\t Training done.')
+    total_samples = 0
+    print('\n\n ... computing cnn overall accuracy \n\n')
+    probs, conf_mat = utils_keras.cnn_metrics(args.test_data, args.test_masks, args.crop, args.classes, model)
+    print('\n Confusion matrix \n', conf_mat)

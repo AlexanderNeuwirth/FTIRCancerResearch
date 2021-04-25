@@ -9,8 +9,10 @@ from keras.layers import Conv2D, MaxPooling2D, BatchNormalization
 from keras.callbacks import ModelCheckpoint
 from keras import regularizers
 from keras import initializers
-import numpy as np
+from datetime import datetime
+import tensorflow as tf
 import os
+import numpy as np
 import time
 
 def build_net(X, Y, num_classes, num_epochs, checkpoint_path, size_batch, Xval=None, Yval=None, dec_step=100,
@@ -48,7 +50,7 @@ def build_net(X, Y, num_classes, num_epochs, checkpoint_path, size_batch, Xval=N
     model.add(Activation('softmax'))
 
     ##########################################################################
-    # initiate AdaDelta optimizer
+    # initiate Adam optimizer
     opt = keras.optimizers.Adam(learning_rate=0.01, epsilon=1e-07)
 
     ##########################################################################
@@ -58,9 +60,16 @@ def build_net(X, Y, num_classes, num_epochs, checkpoint_path, size_batch, Xval=N
               metrics=['accuracy'])
  
     ##########################################################################
-    # Train
+
+    logdir = "logs/scalars/" + datetime.now().strftime("%Y%m%d-%H%M%S")
+    tensorboard_callback = keras.callbacks.TensorBoard(log_dir=logdir)
+
     filepath = f"{checkpoint_path}/model.h5"
-    checkpoint = ModelCheckpoint(filepath, monitor='val_accuracy', verbose=1, save_best_only=False, mode='max')
+    checkpoint = ModelCheckpoint(filepath, monitor='val_loss', verbose=1, save_best_only=True, mode='min')
+
+    # Train
+
+
     if train:
         start_time = time.time()
         history_callback = None
@@ -70,16 +79,14 @@ def build_net(X, Y, num_classes, num_epochs, checkpoint_path, size_batch, Xval=N
               epochs=num_epochs,
               validation_split=0.2,
               shuffle=True,
-              callbacks=[checkpoint]
-              )
+              callbacks=[checkpoint, tensorboard_callback])
         else:
             history_callback = model.fit(X, Y,
               batch_size=size_batch,
               epochs=num_epochs,
               validation_data=(Xval, Yval),
               shuffle=True,
-              callbacks=[checkpoint]
-              )
+              callbacks=[checkpoint, tensorboard_callback])
 
         loss_history = history_callback.history["loss"]
         loss_history_np = np.array(loss_history)

@@ -9,8 +9,10 @@ from keras.layers import Conv2D, MaxPooling2D, BatchNormalization
 from keras.callbacks import ModelCheckpoint
 from keras import regularizers
 from keras import initializers
-import numpy as np
+from datetime import datetime
+import tensorflow as tf
 import os
+import numpy as np
 import time
 
 def build_net(X, Y, num_classes, num_epochs, checkpoint_path, size_batch, Xval=None, Yval=None, dec_step=100,
@@ -20,27 +22,27 @@ def build_net(X, Y, num_classes, num_epochs, checkpoint_path, size_batch, Xval=N
 
     ###########################################################################
     model = Sequential()
-    model.add(Conv2D(32, (3, 3), padding='same', input_shape=X.shape[1:], kernel_initializer=nor, kernel_regularizer=regularizers.l2(0.001) ))
+    model.add(Conv2D(128, (7, 7), padding='same', input_shape=X.shape[1:], kernel_initializer=nor, kernel_regularizer=regularizers.l2(0.001) ))
     #model.add(BatchNormalization(epsilon=1e-05, momentum=0.9))
-    model.add(Activation('relu'))
+    model.add(Activation('softplus'))
     model.add(MaxPooling2D(pool_size=(2, 2), padding='same'))
     
     ##########################################################################
-    model.add(Conv2D(64, (3, 3), padding='same', kernel_initializer=nor, kernel_regularizer=regularizers.l2(0.001) ))
+    model.add(Conv2D(64, (5, 5), padding='same', kernel_initializer=nor, kernel_regularizer=regularizers.l2(0.001) ))
     #model.add(BatchNormalization(epsilon=1e-05, momentum=0.9))
-    model.add(Activation('relu')) 
+    model.add(Activation('softplus')) 
     
     ###########################################################################
     model.add(Conv2D(64, (3, 3), padding='same', kernel_initializer=nor, kernel_regularizer=regularizers.l2(0.001) ))
     #model.add(BatchNormalization(epsilon=1e-05, momentum=0.9))
-    model.add(Activation('relu'))
+    model.add(Activation('softplus'))
     model.add(MaxPooling2D(pool_size=(2, 2), padding='same'))
          
     ###########################################################################
     model.add(Flatten())
     model.add(Dense(128, kernel_initializer=nor, kernel_regularizer=regularizers.l2(0.001)))
     #model.add(BatchNormalization(epsilon=1e-05, momentum=0.9))
-    model.add(Activation('relu'))
+    model.add(Activation('softplus'))
     model.add(Dropout(0.5))
     
     ##########################################################################
@@ -49,7 +51,7 @@ def build_net(X, Y, num_classes, num_epochs, checkpoint_path, size_batch, Xval=N
 
     ##########################################################################
     # initiate AdaDelta optimizer
-    opt = keras.optimizers.Adam(learning_rate=0.01, epsilon=1e-07)
+    opt = keras.optimizers.Adadelta(lr=0.1, epsilon=1e-07)
 
     ##########################################################################
     # Let's train the model using Adadelta
@@ -58,9 +60,16 @@ def build_net(X, Y, num_classes, num_epochs, checkpoint_path, size_batch, Xval=N
               metrics=['accuracy'])
  
     ##########################################################################
+
+    logdir = "logs/scalars/" + datetime.now().strftime("%Y%m%d-%H%M%S")
+    tensorboard_callback = keras.callbacks.TensorBoard(log_dir=logdir)
+
+    filepath = "./checkpoint/model.h5"#"model-e{epoch:02d}-{val_accuracy:.2f}.h5"
+    checkpoint = ModelCheckpoint(filepath, monitor='val_accuracy', verbose=1, save_best_only=True, mode='max')
+
     # Train
-    filepath = f"{checkpoint_path}/model.h5"
-    checkpoint = ModelCheckpoint(filepath, monitor='val_accuracy', verbose=1, save_best_only=False, mode='max')
+
+
     if train:
         start_time = time.time()
         history_callback = None
@@ -70,16 +79,14 @@ def build_net(X, Y, num_classes, num_epochs, checkpoint_path, size_batch, Xval=N
               epochs=num_epochs,
               validation_split=0.2,
               shuffle=True,
-              callbacks=[checkpoint]
-              )
+              callbacks=[checkpoint, tensorboard_callback])
         else:
             history_callback = model.fit(X, Y,
               batch_size=size_batch,
               epochs=num_epochs,
               validation_data=(Xval, Yval),
               shuffle=True,
-              callbacks=[checkpoint]
-              )
+              callbacks=[checkpoint, tensorboard_callback])
 
         loss_history = history_callback.history["loss"]
         loss_history_np = np.array(loss_history)

@@ -1,4 +1,4 @@
-import keras
+from tensorflow import keras
 import numpy as np
 import os
 from hsi_cnn_reader_keras import hsi_cnn_reader_keras
@@ -39,6 +39,7 @@ def cnn_metrics(data_path, masks_path, crop_size, num_classes, model):
             y_true.append(labels)
             for j in idx:
                 temp = np.expand_dims(input_[i, :, :, :], 0)
+                #temp = temp[:, :, :, :, np.newaxis]
 
                 # Run the model on one example
                 prediction = model.predict(temp)
@@ -92,7 +93,6 @@ def cnn_classify_batch(data_path, masks_path, crop_size, num_classes, model, npi
             
 
             #prediction = model.predict(np.reshape(input_scaled, (input_.shape[0], input_.shape[1], input_.shape[2], input_.shape[3])))
-            
             prediction = model.predict(input_)
 
             '''
@@ -141,9 +141,6 @@ def chp_folder(folder_path):
 
 
 def load_data(data_path, masks_path, crop_size, num_classes, samples=None, balance=False):
-    # Load CNN data in a format readable by tflearn.
-    print('\n\n balance: ', balance)
-    
     # create the reader object
     reader = hsi_cnn_reader_keras(data_path,
                             masks_path,
@@ -153,8 +150,6 @@ def load_data(data_path, masks_path, crop_size, num_classes, samples=None, balan
                             )
 
     num_samples, num_bands, _, _ = reader.data_dims()
-    print('\n number of samples: ', num_samples, '\n')
-    print(f"data path: {data_path} bands: {num_bands} samples: {num_samples} crop: {crop_size}")
 
     X = np.zeros((num_samples, crop_size, crop_size, num_bands), dtype=np.float32)
 

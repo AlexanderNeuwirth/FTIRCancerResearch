@@ -1,3 +1,5 @@
+import warnings
+warnings.filterwarnings("ignore", message=r"Passing", category=FutureWarning)
 import numpy as np
 import argparse
 import spectral.io.envi as envi
@@ -8,7 +10,7 @@ import sys
 sys.path.insert(1, './stimlib/python')
 import classify
 import os
-from keras.models import load_model
+from tensorflow.keras.models import load_model
 
 '''
     # Script to classify FTIR HSI data using CNN.
@@ -75,8 +77,9 @@ network = input_data(shape=[None, 1, num_bands, 1],
 '''
 print('\n ======= classifying using hsi_cnn_model =========\n')
 
-                                
-model = load_model(os.path.join(args.checkpoint, 'model.h5'))
+
+checkpoint_path = f"/data/berisha_lab/neuwirth/code/2dcnn-keras/checkpoint/{args.checkpoint}"    
+model = load_model(os.path.join(checkpoint_path, 'model.h5'))
 
 
 total_samples = 0
