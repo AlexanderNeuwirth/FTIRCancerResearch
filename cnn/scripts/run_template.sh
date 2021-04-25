@@ -32,11 +32,12 @@
 #SBATCH --job-name={{BRANCH}}
 
 # Set up venv
-cd cnn
+(
+cd cnn || exit
 python3 -m pip install --user virtualenv
 python3 -m virtualenv venv
-./cnn/venv/bin/pip3 install -r requirements.txt
-cd ..
+./venv/bin/pip3 install -r requirements.txt
+)
 
 # Run scripts
 data="/data/berisha_lab/neuwirth/data/mnf16"
