@@ -31,11 +31,14 @@
 #SBATCH --output=log.out
 #SBATCH --job-name={{BRANCH}}
 
+# Set up venv
+cd cnn
 python3 -m pip install --user virtualenv
 python3 -m virtualenv venv
-
 ./cnn/venv/bin/pip3 install -r requirements.txt
+cd ..
 
+# Run scripts
 data="/data/berisha_lab/neuwirth/data/mnf16"
 masks="/data/berisha_lab/neuwirth/annotations_4"
 checkpoint="adam0p01"
