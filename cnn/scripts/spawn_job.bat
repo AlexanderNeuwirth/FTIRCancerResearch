@@ -42,7 +42,7 @@ cd ..
 git checkout %BRANCH%
 
 :: Clean up temp file after putty session ends
-del scripts\temp.sh
+del cnn\scripts\temp.sh
 EXIT /b 0
 
 :: Handle bad params
