@@ -38,6 +38,7 @@ powershell -Command "(gc scripts\temp.sh) -replace '{{ID}}', '%ID%' | Out-File -
 putty.exe -ssh neuwirtha@dh-ood.hpc.msoe.edu -pw %ROSIE_ACCESS% -m scripts\temp.sh
 
 :: Return to original branch
+cd ..
 git checkout %BRANCH%
 
 :: Clean up temp file after putty session ends
