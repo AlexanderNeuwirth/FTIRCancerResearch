@@ -7,15 +7,15 @@ mkdir -p autojobs
 cd autojobs || exit
 
 # Clear out previous duplicate jobs
-rm -rf test_20210425_8:1941
+rm -rf test_20210425_8:3120
 
 # Pull down code
-git clone git@github.com:AlexanderNeuwirth/FTIRCancerResearch.git test_20210425_8:1941
-cd test_20210425_8:1941 || exit
+git clone git@github.com:AlexanderNeuwirth/FTIRCancerResearch.git test_20210425_8:3120
+cd test_20210425_8:3120 || exit
 git checkout test
 
 # Schedule with SLURM
-sbatch ./cnn/run.sh
+srun singularity shell --nv -B /data/:/data/ /data/containers/msoe-tensorflow.sif ./cnn/run.sh
 
 # Give slurm time to create outfile
 sleep 15
