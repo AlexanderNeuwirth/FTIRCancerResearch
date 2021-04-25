@@ -1,3 +1,4 @@
+import sys
 sys.path.insert(1, '..')
 import warnings
 warnings.filterwarnings("ignore", message=r"Passing", category=FutureWarning)
@@ -6,7 +7,7 @@ import argparse
 import time
 from cnn.hsi_cnn import utils_keras
 import scipy.misc
-import sys
+
 sys.path.insert(1, './tracked_dependencies/stimlib/python')
 sys.path.insert(1, './tracked_dependencies/spectral')
 import spectral.io.envi as envi
