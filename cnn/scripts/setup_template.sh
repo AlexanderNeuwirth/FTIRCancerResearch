@@ -15,7 +15,7 @@ cd {{ID}} || exit
 git checkout {{BRANCH}}
 
 # Schedule with SLURM
-sbatch run.sh
+sbatch ./cnn/run.sh
 
 # Give slurm time to create outfile
 sleep 15
